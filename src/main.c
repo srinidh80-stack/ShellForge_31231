@@ -9,6 +9,7 @@
 #include "parser.h"
 #include "expand.h"
 #include "builtin.h"
+#include "executor.h"
 
 int main(void)
 {
@@ -51,53 +52,33 @@ int main(void)
 
 	lexer(line, &tokens);
 
-        token_print(&tokens);
+        // token_print(&tokens);
 
 // milestone 2.2 - expansion of environment variables and parser
 
 	if(parser(&tokens, &pipeline))
 	{
 		expand_variables(&pipeline);
-    	        pipeline_print(&pipeline);
+    	//	pipeline_print(&pipeline);
 	}
 
-	/*
-         * ------------------------------------------------
-         * BUILTIN TEST
-         * ------------------------------------------------
-         */
 
-        if (pipeline.command_count > 0)
-        {
-            command_t *cmd =
-                &pipeline.commands[0];
+	for (int i = 0; i < pipeline.command_count; i++)
+	{
+    		int result =
+        	execute_command(&pipeline.commands[i]);
 
-            if (is_builtin(cmd))
-            {
-                int result =
-                    execute_builtin(cmd);
+        	if (result == 1)
+    	        {
+        	 free(line);
+		  return 0;
+                  
+        	}
 
-                /*
-                 * exit command
-                 */
-                if (result == 1)
-                {
-                    free(line);
-                    break;
-                }
-            }
-            else
-            {
-                printf("External command: %s\n",
-                       cmd->argv[0]);
-            }
         }
-
 
        free(line);
 
     }
-
     return 0;
 }
-
