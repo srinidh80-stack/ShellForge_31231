@@ -41,3 +41,4 @@ void expand_variables(pipeline_t *pipeline)
         }
     }
 }
+
